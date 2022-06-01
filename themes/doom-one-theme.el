@@ -38,6 +38,13 @@ Can be an integer to determine the exact padding."
   :group 'doom-one-theme
   :type '(choice integer boolean))
 
+(defface doom-one-prog-comment-face nil
+  "Face for comments in 'prog-mode' derived buffers."
+  :group 'doom-one-theme)
+
+(defface doom-one-prog-doc-face nil
+  "Face for docstrings in 'prog-mode' derived buffers."
+  :group 'doom-one-theme)
 
 ;;
 ;;; Theme definition
@@ -89,8 +96,8 @@ Can be an integer to determine the exact padding."
    (vertical-bar   (doom-darken base1 0.1))
    (selection      dark-blue)
    (builtin        magenta)
-   (comments       (if doom-one-brighter-comments dark-cyan base5))
-   (doc-comments   (doom-lighten (if doom-one-brighter-comments dark-cyan base5) 0.25))
+   (comments       base5)
+   (doc-comments   (doom-lighten base5 0.25))
    (constants      violet)
    (functions      magenta)
    (keywords       blue)
@@ -129,8 +136,12 @@ Can be an integer to determine the exact padding."
   ;;;; Base theme face overrides
   (((line-number &override) :foreground base4)
    ((line-number-current-line &override) :foreground fg)
-   ((font-lock-comment-face &override)
-    :background (if doom-one-brighter-comments (doom-lighten bg 0.05)))
+   (doom-one-prog-comment-face
+    :foreground dark-cyan
+    :background (doom-lighten bg 0.05))
+   (doom-one-prog-doc-face
+    :foreground (doom-lighten dark-cyan 0.25)
+    :background (doom-lighten bg 0.05))
    (mode-line
     :background modeline-bg :foreground modeline-fg
     :box (if -modeline-pad `(:line-width ,-modeline-pad :color ,modeline-bg)))
@@ -173,5 +184,13 @@ Can be an integer to determine the exact padding."
 
   ;;;; Base theme variable overrides-
   ())
+
+(defun doom-one-set-prog-comment-faces-h ()
+  "Set highlighted comment and doc faces if enabled."
+  (when (and (equal custom-enabled-themes '(doom-one)) doom-one-brighter-comments)
+    (setq! font-lock-comment-face 'doom-one-prog-comment-face
+           font-lock-doc-face 'doom-one-prog-doc-face)))
+
+(add-hook 'prog-mode-hook #'doom-one-set-prog-comment-faces-h)
 
 ;;; doom-one-theme.el ends here
