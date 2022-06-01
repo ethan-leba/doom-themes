@@ -38,6 +38,9 @@ Can be an integer to determine the exact padding."
   :group 'doom-one-theme
   :type '(choice integer boolean))
 
+(defface doom-one-prog-comments nil
+  "Face for comments in prog-mode derived buffers."
+  :group 'doom-one-theme)
 
 ;;
 ;;; Theme definition
@@ -89,7 +92,7 @@ Can be an integer to determine the exact padding."
    (vertical-bar   (doom-darken base1 0.1))
    (selection      dark-blue)
    (builtin        magenta)
-   (comments       (if doom-one-brighter-comments dark-cyan base5))
+   (comments       base5)
    (doc-comments   (doom-lighten (if doom-one-brighter-comments dark-cyan base5) 0.25))
    (constants      violet)
    (functions      magenta)
@@ -129,8 +132,9 @@ Can be an integer to determine the exact padding."
   ;;;; Base theme face overrides
   (((line-number &override) :foreground base4)
    ((line-number-current-line &override) :foreground fg)
-   ((font-lock-comment-face &override)
+   ((font-lock-doc-face &override)
     :background (if doom-one-brighter-comments (doom-lighten bg 0.05)))
+   (doom-one-prog-comments :foreground dark-cyan :background (doom-lighten bg 0.05))
    (mode-line
     :background modeline-bg :foreground modeline-fg
     :box (if -modeline-pad `(:line-width ,-modeline-pad :color ,modeline-bg)))
@@ -173,5 +177,11 @@ Can be an integer to determine the exact padding."
 
   ;;;; Base theme variable overrides-
   ())
+
+(defun doom-one-enable-prog-comments ()
+  (when (and (equal custom-enabled-themes '(doom-one)) doom-one-brighter-comments)
+    (setq! font-lock-comment-face 'doom-one-prog-comments)))
+
+(add-hook 'prog-mode-hook #'doom-one-enable-prog-comments)
 
 ;;; doom-one-theme.el ends here
